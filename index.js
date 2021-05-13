@@ -4,6 +4,7 @@ const dotenv = require('dotenv'); // for using .env variables
 const app = express()
 const port = 3000
 
+
 //for reading .env file content
 dotenv.config();
 
@@ -15,6 +16,21 @@ app.use(function (req, res, next) {
     console.log('Time:', Date.now())
     next();
 })
+
+
+
+app.post('/register', (req, res) => {
+    console.log(req.body)
+    const mongoose = require('mongoose')
+    const User = require('./models/User.js')
+    mongoose.connect('mongodb://localhost/myblog', {
+        useNewUrlParser: true
+    });
+    User.create(req.body, (error, user) => {
+        res.send('created')
+    })
+});
+
 
 
 function authenticateToken(req, res, next) {
@@ -62,3 +78,27 @@ app.post('/createJWT', (req, res) => {
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
+
+app.post('/save', (req, res) => {
+    console.log('hello save');
+
+
+    const mongoose = require('mongoose')
+    const BlogPost = require('./models/BlogPost')
+    mongoose.connect('mongodb://localhost/myblog', {
+        useNewUrlParser: true
+    });
+    BlogPost.create({
+        title: 'The Mythbuster’s Guide to Saving Money on Energy Bills',
+        body: 'If you have been here a long time, you might remember when I went on ITV Tonight to' +
+            'dispense a masterclass in saving money on energy bills.Energy - saving is one of my favourite money' +
+            'topics, because once you get past the boring bullet - point lists,' +
+            'a whole new world of thrifty nerdery' +
+            'opens up.You know those bullet - point lists.You start spotting them everything at this time of year.' +
+            'They go like this: '
+    }, (error, blogpost) => {
+        console.log(error, blogpost)
+    })
+
+    res.send('created');
+});
