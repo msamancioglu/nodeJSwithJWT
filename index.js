@@ -11,9 +11,9 @@ dotenv.config();
 app.use(express.json());
 
 app.use(function (req, res, next) {
-  // my custom middleware  
-  console.log('Time:', Date.now())
-  next();
+    // my custom middleware  
+    console.log('Time:', Date.now())
+    next();
 })
 
 
@@ -24,17 +24,13 @@ function authenticateToken(req, res, next) {
     console.log(process.env.TOKEN_SECRET);
     if (token == null) return res.sendStatus(401)
 
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {        
-        
-        
-        if (err)  {
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+        if (err) {
             console.log(err);
             return res.sendStatus(403);
         }
         req.user = user;
         console.log(req.user)
-        
-        
     })
     next();
 }
@@ -51,10 +47,9 @@ app.get('/genericEndpoint', authenticateToken, (req, res) => {
 
 app.post('/createJWT', (req, res) => {
 
-    if (req.body.username != 'mustafa' || req.body.password !='deneme12') {
+    if (req.body.username != 'mustafa' || req.body.password != 'deneme12') {
         return res.sendStatus(403);
     }
-    
     // this api generates jwt token for user
     res.json(jwt.sign({
             username: req.params.username
