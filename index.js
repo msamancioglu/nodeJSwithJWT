@@ -5,12 +5,44 @@ const app = express()
 const expressSession = require('express-session');
 const port = 3000
 
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+
 
 //for reading .env file content
 dotenv.config();
 
 // for parsing json payload 
 app.use(express.json());
+
+const specs = swaggerJsdoc({
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "ExpressJS API documentation with Swagger",
+            version: "0.1.0",
+            description: "This is a simple CRUD API application made with Express and documented with Swagger",
+            license: {
+                name: "MIT",
+                url: "https://spdx.org/licenses/MIT.html",
+            },
+            contact: {
+                name: "LogRocket",
+                url: "https://logrocket.com",
+                email: "info@email.com",
+            },
+        },
+        servers: [{
+            url: "http://localhost:3000/books",
+        }, ],
+    },
+    apis: ["./routes/books.js"],
+});
+app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(specs)
+);
 
 app.use(function (req, res, next) {
     // my custom middleware  
@@ -36,15 +68,21 @@ app.post('/register', (req, res) => {
     })
 });
 
-app.get('/getsessionval', (req, res) => {
+app.get('/incrementsessionval', (req, res) => {
     if (req.session.views) {
         ++req.session.views;
     } else {
-        req.session.views = 1;       
+        req.session.views = 1;
     }
 
     res.send(` session val = ${req.session.views}`);
 });
+
+app.get('/getsessionval', (req, res) => {
+
+    res.send(` session val = ${req.session.views}`);
+});
+
 
 app.get('/list', (req, res) => {
     console.log(req.body)
