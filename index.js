@@ -33,6 +33,23 @@ app.post('/register', (req, res) => {
 
 
 
+app.get('/list', (req, res) => {
+    console.log(req.body)
+    const mongoose = require('mongoose')
+    const User = require('./models/User.js')
+    mongoose.connect('mongodb://localhost/myblog', {
+        useNewUrlParser: true
+    });
+
+    
+    User.find({}, (error, user) => {
+        console.log(user);
+        res.send(user)
+    })
+});
+
+
+
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
@@ -50,6 +67,7 @@ function authenticateToken(req, res, next) {
     })
     next();
 }
+
 
 app.get('/genericEndpoint', authenticateToken, (req, res) => {
     res.send('Hello World!')
