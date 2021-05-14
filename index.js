@@ -4,6 +4,7 @@ const dotenv = require('dotenv'); // for using .env variables
 const app = express()
 const expressSession = require('express-session');
 const port = 3000
+const blogsRouter = require('./routers/blogs')
 
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
@@ -15,33 +16,37 @@ dotenv.config();
 // for parsing json payload 
 app.use(express.json());
 
-const specs = swaggerJsdoc({
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "ExpressJS API documentation with Swagger",
-            version: "0.1.0",
-            description: "This is a simple CRUD API application made with Express and documented with Swagger",
-            license: {
-                name: "MIT",
-                url: "https://spdx.org/licenses/MIT.html",
-            },
-            contact: {
-                name: "LogRocket",
-                url: "https://logrocket.com",
-                email: "info@email.com",
-            },
-        },
-        servers: [{
-            url: "http://localhost:3000/",
-        }, ],
-    },
-    apis: ["./index.js"],
-});
+// Use express.Router() mini-app
+
+app.use('/blogs', blogsRouter)
+
+// swagger api doc
 app.use(
     "/api-docs",
     swaggerUi.serve,
-    swaggerUi.setup(specs)
+    swaggerUi.setup(swaggerJsdoc({
+        definition: {
+            openapi: "3.0.0",
+            info: {
+                title: "ExpressJS API documentation with Swagger",
+                version: "0.1.0",
+                description: "This is a simple CRUD API application made with Express and documented with Swagger",
+                license: {
+                    name: "MIT",
+                    url: "https://spdx.org/licenses/MIT.html",
+                },
+                contact: {
+                    name: "LogRocket",
+                    url: "https://logrocket.com",
+                    email: "info@email.com",
+                },
+            },
+            servers: [{
+                url: "http://localhost:3000/blogs",
+            }, ],
+        },
+        apis: ["./blogsRouter.js"],
+    }))
 );
 
 app.use(function (req, res, next) {
@@ -50,11 +55,27 @@ app.use(function (req, res, next) {
     next();
 });
 
+// activate session middleware
 app.use(expressSession({
     resave: false, // don't save session if unmodified
     saveUninitialized: false, // don't create session until something stored
     secret: 'some secret key to encrypt session id with'
 }));
+
+// example session variable usage
+app.get('/incrementsessionval', (req, res) => {
+    if (req.session.views) {
+        ++req.session.views;
+    } else {
+        req.session.views = 1;
+    }
+
+    res.send(` session val = ${req.session.views}`);
+});
+
+app.get('/getsessionval', (req, res) => {
+    res.send(` session val = ${req.session.views}`);
+});
 
 app.post('/register', (req, res) => {
     console.log(req.body)
@@ -68,20 +89,6 @@ app.post('/register', (req, res) => {
     })
 });
 
-app.get('/incrementsessionval', (req, res) => {
-    if (req.session.views) {
-        ++req.session.views;
-    } else {
-        req.session.views = 1;
-    }
-
-    res.send(` session val = ${req.session.views}`);
-});
-
-app.get('/getsessionval', (req, res) => {
-
-    res.send(` session val = ${req.session.views}`);
-});
 
 
 app.get('/list', (req, res) => {
