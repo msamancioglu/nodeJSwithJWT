@@ -33,6 +33,7 @@ app.post('/register', (req, res) => {
 
 
 
+
 app.get('/list', (req, res) => {
     console.log(req.body)
     const mongoose = require('mongoose')
@@ -41,14 +42,53 @@ app.get('/list', (req, res) => {
         useNewUrlParser: true
     });
 
-    
+
     User.find({}, (error, user) => {
         console.log(user);
         res.send(user)
     })
 });
 
+app.post('/login', (req, res) => {
+    const {
+        username,
+        password
+    } = req.body;
+    const bcrypt = require('bcrypt')
+    const mongoose = require('mongoose')
+    const User = require('./models/User.js')
+    mongoose.connect('mongodb://localhost/myblog', {
+        useNewUrlParser: true
+    });
+    User.findOne({
+        username: username
+    }, (error, user) => {
+        if (error) {
+            console.log('error ' + error);
+            res.send(error);
+        }
+        if (user) {
+            bcrypt.compare(password, user.password, (error, same) => {
+                if (same) {
+                    //res.send(` Wellcome user  ${user.username}`);
+                    console.log(user);
+                    res.json(jwt.sign({
+                            username: req.params.username
+                        },
+                        process.env.TOKEN_SECRET, {
+                            expiresIn: '1800s'
+                        }));
+                } else {
+                    console.log(' sorry wrogn password for USER: ' + user);
+                    res.send(' sorry wrogn password for USER: ' + user.username);
+                }
+            })
+        }
+    });
+});
 
+
+// ekleme
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
@@ -78,20 +118,6 @@ app.get('/genericEndpoint', authenticateToken, (req, res) => {
     console.log(req.headers['authorization'])
 })
 
-
-app.post('/createJWT', (req, res) => {
-
-    if (req.body.username != 'mustafa' || req.body.password != 'deneme12') {
-        return res.sendStatus(403);
-    }
-    // this api generates jwt token for user
-    res.json(jwt.sign({
-            username: req.params.username
-        },
-        process.env.TOKEN_SECRET, {
-            expiresIn: '1800s'
-        }));
-});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
