@@ -5,10 +5,8 @@ const app = express()
 const expressSession = require('express-session');
 const port = 3000
 const blogsRouter = require('./routers/blogs')
-
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
-
 
 //for reading .env file content
 dotenv.config();
@@ -20,7 +18,6 @@ app.use(express.json());
 
 app.use('/blogs', blogsRouter)
 
-// swagger api doc
 app.use(
     "/api-docs",
     swaggerUi.serve,
@@ -48,6 +45,7 @@ app.use(
         apis: ["./blogsRouter.js"],
     }))
 );
+
 
 app.use(function (req, res, next) {
     // my custom middleware  

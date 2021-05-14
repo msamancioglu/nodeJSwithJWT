@@ -2,7 +2,7 @@ var express = require('express')
 var router = express.Router()
 
 // middleware that is specific to this router
-router.use(function timeLog (req, res, next) {
+router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now())
   next()
 })
@@ -12,7 +12,7 @@ router.get('/', function (req, res) {
 })
 // define the about route
 router.get('/:id', function (req, res) {
-  res.send('retrive blog with id '+req.params.id)
+  res.send('retrive blog with id ' + req.params.id)
 })
 
 router.post('/', function (req, res) {
@@ -20,11 +20,11 @@ router.post('/', function (req, res) {
 })
 
 router.put('/:id', function (req, res) {
-  res.send('update blog with id '+req.params.id)
+  res.send('update blog with id ' + req.params.id)
 })
 
 router.delete('/:id', function (req, res) {
-  res.send('delete blog with id '+req.params.id)
+  res.send('delete blog with id ' + req.params.id)
 })
 
 router.all('', function (req, res) {
