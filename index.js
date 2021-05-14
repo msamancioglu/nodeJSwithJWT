@@ -160,7 +160,7 @@ function authenticateToken(req, res, next) {
 
 
 //
-app.get('/user/:user/post/:postid', (req, res)=>{
+app.get('/user/:user/post/:postid', (req, res) => {
     console.log(req.params);
     console.log(req.params.user);
     console.log(req.params.postid);
@@ -175,6 +175,21 @@ app.get('/genericEndpoint', authenticateToken, (req, res) => {
     console.log(req.headers['authorization'])
 })
 
+// route chaining
+// hanlde all CRUD operations in a sigle route
+app.route('/chain')
+    .get(function (req, res) {
+        res.send('Retrieve/List')
+    })
+    .post(function (req, res) {
+        res.send('Create')
+    })
+    .put(function (req, res) {
+        res.send('Update')
+    })
+    .delete(function (req, res) {
+        res.send('Delete')
+    })
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
@@ -189,11 +204,11 @@ app.post('/save', (req, res) => {
     });
     BlogPost.create({
         title: 'Bitcoin: A Peer-to-Peer Electronic Cash System',
-        body: ' A purely peer-to-peer version of electronic cash would allow online payments'+
-              ' to be sent directly from one party to another without going through a'+
-              ' financial institution. Digital signatures provide part of the solution, but the main'+
-              ' benefits are lost if a trusted third party is still required to prevent double-spending.'+
-              ' We propose a solution to the double-spending problem using a peer-to-peer network.'        
+        body: ' A purely peer-to-peer version of electronic cash would allow online payments' +
+            ' to be sent directly from one party to another without going through a' +
+            ' financial institution. Digital signatures provide part of the solution, but the main' +
+            ' benefits are lost if a trusted third party is still required to prevent double-spending.' +
+            ' We propose a solution to the double-spending problem using a peer-to-peer network.'
     }, (error, blogpost) => {
         console.log(error, blogpost)
     })
