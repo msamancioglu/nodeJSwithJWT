@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken'); // for jwt authentication
 const express = require('express')
 const dotenv = require('dotenv'); // for using .env variables
 const app = express()
+const expressSession = require('express-session');
 const port = 3000
 
 
@@ -15,9 +16,13 @@ app.use(function (req, res, next) {
     // my custom middleware  
     console.log('Time:', Date.now())
     next();
-})
+});
 
-
+app.use(expressSession({
+    resave: false, // don't save session if unmodified
+    saveUninitialized: false, // don't create session until something stored
+    secret: 'some secret key to encrypt session id with'
+}));
 
 app.post('/register', (req, res) => {
     console.log(req.body)
@@ -31,8 +36,15 @@ app.post('/register', (req, res) => {
     })
 });
 
+app.get('/getsessionval', (req, res) => {
+    if (req.session.views) {
+        ++req.session.views;
+    } else {
+        req.session.views = 1;       
+    }
 
-
+    res.send(` session val = ${req.session.views}`);
+});
 
 app.get('/list', (req, res) => {
     console.log(req.body)
