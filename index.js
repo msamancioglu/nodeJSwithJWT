@@ -33,10 +33,10 @@ const specs = swaggerJsdoc({
             },
         },
         servers: [{
-            url: "http://localhost:3000/books",
+            url: "http://localhost:3000/",
         }, ],
     },
-    apis: ["./routes/books.js"],
+    apis: ["./index.js"],
 });
 app.use(
     "/api-docs",
@@ -159,6 +159,13 @@ function authenticateToken(req, res, next) {
 }
 
 
+//
+app.get('/user/:user/post/:postid', (req, res)=>{
+    console.log(req.params);
+    console.log(req.params.user);
+    console.log(req.params.postid);
+});
+
 app.get('/genericEndpoint', authenticateToken, (req, res) => {
     res.send('Hello World!')
     // use code below to create you apps `token secret`
@@ -175,21 +182,18 @@ app.listen(port, () => {
 
 app.post('/save', (req, res) => {
     console.log('hello save');
-
-
     const mongoose = require('mongoose')
     const BlogPost = require('./models/BlogPost')
     mongoose.connect('mongodb://localhost/myblog', {
         useNewUrlParser: true
     });
     BlogPost.create({
-        title: 'The Mythbuster’s Guide to Saving Money on Energy Bills',
-        body: 'If you have been here a long time, you might remember when I went on ITV Tonight to' +
-            'dispense a masterclass in saving money on energy bills.Energy - saving is one of my favourite money' +
-            'topics, because once you get past the boring bullet - point lists,' +
-            'a whole new world of thrifty nerdery' +
-            'opens up.You know those bullet - point lists.You start spotting them everything at this time of year.' +
-            'They go like this: '
+        title: 'Bitcoin: A Peer-to-Peer Electronic Cash System',
+        body: ' A purely peer-to-peer version of electronic cash would allow online payments'+
+              ' to be sent directly from one party to another without going through a'+
+              ' financial institution. Digital signatures provide part of the solution, but the main'+
+              ' benefits are lost if a trusted third party is still required to prevent double-spending.'+
+              ' We propose a solution to the double-spending problem using a peer-to-peer network.'        
     }, (error, blogpost) => {
         console.log(error, blogpost)
     })
